@@ -50,7 +50,7 @@ def parse(xml_path, parquet_path):
     
     print(f"Finished parsing")
         
-def main():
+def startParsing():
     folder_path = input("Enter the path to the folder containing your XML files:").strip('"')
     
     if not os.path.isdir(folder_path):
@@ -69,6 +69,3 @@ def main():
         full_parquet_path = os.path.join(folder_path, base_name + ".parquet")
         
         parse(full_path, full_parquet_path)
-
-if __name__ == "__main__":
-    main()

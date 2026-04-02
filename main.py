@@ -1,5 +1,6 @@
 import duckdb
 from castingTables import CastToCorrectTypes
+from parser import startParsing
 
 con = duckdb.connect()
 
@@ -27,21 +28,27 @@ def Describe():
             result = con.execute(f"DESCRIBE SELECT * FROM '{file}'").fetchdf()
             print(result)
     except:
-        for file in mathoverflowFiles:
-            print(f"DESCRIBE SELECT * FROM '{file}':")
-            result = con.execute(f"DESCRIBE SELECT * FROM '{file}'").fetchdf()
-            print(result)
-        
+        try:
+            for file in mathoverflowFiles:
+                print(f"DESCRIBE SELECT * FROM '{file}':")
+                result = con.execute(f"DESCRIBE SELECT * FROM '{file}'").fetchdf()
+                print(result)
+        except:
+            print("You first need to cast the XML files to parquet and put them in a folder called mathoverflow in this directory")
+                   
     try:
         for file in mathStackExchangeflowFiles_typed:
             print(f"DESCRIBE SELECT * FROM '{file}':")
             result = con.execute(f"DESCRIBE SELECT * FROM '{file}'").fetchdf()
             print(result)
     except:
-        for file in mathStackExchangeflowFiles:
-            print(f"DESCRIBE SELECT * FROM '{file}':")
-            result = con.execute(f"DESCRIBE SELECT * FROM '{file}'").fetchdf()
-            print(result)
+        try:
+            for file in mathStackExchangeflowFiles:
+                print(f"DESCRIBE SELECT * FROM '{file}':")
+                result = con.execute(f"DESCRIBE SELECT * FROM '{file}'").fetchdf()
+                print(result)
+        except:
+            print("You first need to cast the XML files to parquet and put them in a folder called mathstackexchange in this directory")
 
 
 
@@ -49,16 +56,19 @@ def Describe():
 def main():
     while True:
         print("Please select on what you would like to do:")
-        print("1 Describe all tables")
-        print("2 Cast tables to correct types (creates new files called [tableName]_typed.parquet)")
-        print("3 Exit")
+        print("1 Parse XML files to parquet files")
+        print("2 Describe all tables")
+        print("3 Cast tables to correct types (creates new files called [tableName]_typed.parquet)")
+        print("4 Exit")
         action = input()
         match action:
             case "1":
-                Describe()
+                startParsing()
             case "2":
-                CastToCorrectTypes(con)
+                Describe()
             case "3":
+                CastToCorrectTypes(con)
+            case "4":
                 return
             case _:
                 print("Invalid input")
