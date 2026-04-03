@@ -42,4 +42,4 @@ Please select on what you would like to do:
 - 1: To parse the XML files to parquet files the first option will parse all XML files of a given directory
 - 2: You will get and SQL DESCRIBE querry for all tables. If the tables are already casted then those will be taken, otherwise the raw parquet files are taken.
 - 3: This option will convert all columns to the correct types. When creating the parquet files all columns will be of type `VARCHAR`. Therefore we need to convert them to the approapriate types to compute statistics on them.
-- 4: Computes complexity of a specified column
+- 4: Calculate complexity of a file
