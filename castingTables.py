@@ -33,6 +33,8 @@ def CastToCorrectTypes(con, gui=False, path = "", files = []):
         dir = selection()
         if(dir == ""):
             return
+    else:
+        dir = path
 
     if((os.path.isfile(f"{dir}/Badges.parquet") and path == "") or (path != "" and "Badges.parquet" in files)):
         con.execute(f"""

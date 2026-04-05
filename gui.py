@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import filedialog
 import os
 from parser import startParsing
-from main import executeCustomQueryDF, get_connection
+from main import executeCustomQueryDF, get_connection, calculateComplexity
 from castingTables import CastToCorrectTypes
 
 
@@ -52,6 +52,8 @@ def main():
                     startParsing(st.session_state.path)
                     st.success("Parsing complete!")
 
+
+
     elif action == "Describe Tables":
         if "path" not in st.session_state:
             st.session_state.path = ""
@@ -89,9 +91,14 @@ def main():
                         description = executeCustomQueryDF(f"DESCRIBE SELECT * FROM '{file_path}'")
                         st.dataframe(description, use_container_width=True)
 
-                        st.subheader(f"First 5 rows of `{st.session_state.file}`")
-                        preview_df = executeCustomQueryDF(f"SELECT * FROM '{file_path}' LIMIT 5")
-                        st.dataframe(preview_df) 
+                        limit = st.number_input("Number of rows to preview:", min_value=1, max_value=1000, value=5, step=1)
+                        st.subheader(f"First {limit} rows of `{st.session_state.file}`")
+                        @st.cache_data # This tells Streamlit to remember the result
+                        def get_data(path):
+                            return executeCustomQueryDF(f"SELECT * FROM '{path}' LIMIT 1000")
+                        #preview_df = executeCustomQueryDF(f"SELECT * FROM '{file_path}' LIMIT {limit}")
+                        full_df = get_data(file_path)
+                        st.dataframe(full_df.head(limit))
 
                     except Exception as e:
                         st.error(f"Failed to describe table!")
@@ -131,13 +138,63 @@ def main():
         
         if st.button("Run Type Casting"):
             if(st.session_state.path != "" and len(files) > 0):
-                CastToCorrectTypes(con, st.session_state.path, files_to_cast)
-            st.success("Casting complete.")
+                with st.spinner("Casting..."):
+                    CastToCorrectTypes(con, True, st.session_state.path, files_to_cast)
+                    st.success("Casting complete.")
+            else:
+                st.info("Please first select a directory with parquet files.")
             
         
 
     elif action == "Calculate Complexity":
-        st.write("Calculating complexity metrics...")
+        if "path" not in st.session_state:
+            st.session_state.path = ""
+        if "col" not in st.session_state:
+            st.session_state.col = ""
+            
+        st.session_state.file = ""
+            
+        if st.button("Select folder"):
+            root = tk.Tk()
+            root.withdraw()
+            root.wm_attributes('-topmost', 1)
+            st.session_state.path = filedialog.askdirectory(master=root)
+            root.destroy()
+            
+        st.write(f"Folder to parse:{st.session_state.path}")
+            
+        if(st.session_state.path != ""):
+            try:
+                files = [f for f in os.listdir(st.session_state.path) if f.lower().endswith('.parquet') and "_typed" in f and not "_complexity" in f]
+                if(len(files) == 0):
+                    st.error("Found no parquet files in this directory")
+            except:
+                st.write("Path error")
+                
+            if(len(files) > 0):
+                try:
+                    st.session_state.file = st.selectbox("Select the table you want to compute the complexity of:", files, index=files.index(st.session_state.file))
+                except:
+                    st.session_state.file = st.selectbox("Select the table you want to compute the complexity of:", files)
+                  
+            if(st.session_state.file != ""):
+                try:
+                    file_path = os.path.join(st.session_state.path, st.session_state.file)
+                    cols = executeCustomQueryDF(f"DESCRIBE SELECT * FROM '{file_path}'")['column_name']
+                    st.session_state.col = st.selectbox("Select the column for complexity compution", cols)
+                except:
+                    st.error("Something went wrong")
+                    
+        if st.button("Run Type Casting"):
+            if(st.session_state.path != "" and len(files) > 0 and st.session_state.file != ""):
+                with st.spinner("Computing complexity..."):
+                    calculateComplexity(True, st.session_state.path, st.session_state.file, st.session_state.col)
+                    st.success("Casting complete.")
+                    st.subheader(f"First 10 rows of `{file_path[:-8]}_complexity.parquet`")
+                    preview_df = executeCustomQueryDF(f"SELECT * FROM '{file_path[:-8]}_complexity.parquet' LIMIT 10")
+                    st.dataframe(preview_df) 
+            else:
+                st.info("Please first select a directory with parquet files.")
         # test()
 
 
