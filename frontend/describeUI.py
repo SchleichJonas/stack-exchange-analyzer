@@ -27,13 +27,13 @@ def describeSite():
             files = [f for f in os.listdir(st.session_state.path) if f.lower().endswith('.parquet')]
             if(len(files) == 0):
                 st.error("Found no parquet files in this directory")
-        except:
+        except Exception as e:
             st.write("Path error")
             
         if(len(files) > 0):
             try:
                 st.session_state.file = st.selectbox("Select a table to describe:", files, index=files.index(st.session_state.file))
-            except:
+            except Exception as e:
                 st.session_state.file = st.selectbox("Select a table to describe:", files)
 
             if st.session_state.file:
@@ -54,5 +54,5 @@ def describeSite():
                     full_df = get_data(file_path)
                     st.dataframe(full_df.head(limit))
 
-                except Exception as e:
+                except Exception as e::
                     st.error(f"Failed to describe table!")

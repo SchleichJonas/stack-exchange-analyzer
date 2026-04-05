@@ -35,7 +35,7 @@ def calculateComplexity(gui = False, path = "", file = "", col = ""):
         col = input()
         try:
             col = cols['column_name'][int(col)]
-        except:
+        except Exception as e:
             return
         
         exists = False

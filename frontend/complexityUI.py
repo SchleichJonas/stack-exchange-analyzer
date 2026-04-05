@@ -30,13 +30,13 @@ def complexitySite():
             files = [f for f in os.listdir(st.session_state.path) if f.lower().endswith('.parquet') and "_typed" in f and not "_complexity" in f]
             if(len(files) == 0):
                 st.error("Found no parquet files in this directory")
-        except:
+        except Exception as e:
             st.write("Path error")
             
         if(len(files) > 0):
             try:
                 st.session_state.file = st.selectbox("Select the table you want to compute the complexity of:", files, index=files.index(st.session_state.file))
-            except:
+            except Exception as e:
                 st.session_state.file = st.selectbox("Select the table you want to compute the complexity of:", files)
                 
         if(st.session_state.file != ""):
@@ -44,7 +44,7 @@ def complexitySite():
                 file_path = os.path.join(st.session_state.path, st.session_state.file)
                 cols = executeCustomQueryDF(f"DESCRIBE SELECT * FROM '{file_path}'")['column_name']
                 st.session_state.col = st.selectbox("Select the column for complexity compution", cols)
-            except:
+            except Exception as e:
                 st.error("Something went wrong")
                 
     if st.button("Compute complexity"):

@@ -17,7 +17,7 @@ def selection():
     folder = input()
     try:
         folder = int(folder)
-    except:
+    except Exception as e:
         return
     
     dir = dirs[folder]

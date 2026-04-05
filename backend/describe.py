@@ -14,7 +14,7 @@ def describeTables():
     folder = input()
     try:
         folder = int(folder)
-    except:
+    except Exception as e:
         return
     
     dir = dirs[folder]
@@ -24,6 +24,6 @@ def describeTables():
             print(f"DESCRIBE SELECT * FROM '{dir}/{file}':")
             result = con.execute(f"DESCRIBE SELECT * FROM '{dir}/{file}'").fetchdf()
             print(result)
-    except:
+    except Exception as e:
             print("ERROR")
             return

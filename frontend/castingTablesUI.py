@@ -29,7 +29,7 @@ def castingTablesSite():
             files = [f for f in os.listdir(st.session_state.path) if f.lower().endswith('.parquet') and not "_typed" in f]
             if(len(files) == 0):
                 st.error("Found no parquet files in this directory")
-        except:
+        except Exception as e:
             st.write("Path error")
             
     con = get_connection()

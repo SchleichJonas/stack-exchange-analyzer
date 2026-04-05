@@ -28,7 +28,7 @@ def parserSite():
                 st.error("No XML files found in this path!")
             else:
                 st.write(f"Found {len(files)} XML files.")
-        except:
+        except Exception as e:
             st.error(f"Path not found in {st.session_state.path}!")
         
     if st.button("Start Parsing"):

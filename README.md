@@ -1,5 +1,7 @@
 # Mathoverflow and Math Steckexchange usage analysis in relation to AI
 
+**Work In Progress!** This project is far from finished. It may contain bugs, might crash, and the codebase will likely receive complete overhauls. This is a working repository for a university seminar paper. Please keep this in mind! Thank you.
+
 ## General
 With our project we want to analyse the usage and overall change that might or might not have happened due to AI.
 Our goal is to determine if the release of popular generative AI like ChatGPT, Gemini or similar had a significant impact on those platforms.
