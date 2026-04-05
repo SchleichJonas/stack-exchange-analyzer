@@ -26,7 +26,14 @@ pip install -r requirements.txt
 ```
 
 ### Usage
-The `main.py` file contains a menu from which all necessary functions can be called.
+We provide a GUI in form of a local webserver. When executing `gui.py` a browser window opens with the options equivalent to the command line.
+It is recommendet to use the GUI, but we will try to provide all functions also to the command line.
+```bash
+streamlit run gui.py
+```
+
+
+The `main.py` file start the command line interface containing a menu from which all necessary functions can be called.
 ```bash
 python main.py
 ```
