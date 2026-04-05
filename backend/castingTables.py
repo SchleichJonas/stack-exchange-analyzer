@@ -1,5 +1,6 @@
 import os
-from defines import IGNOREDDIRECTORIES
+from shared.defines import IGNOREDDIRECTORIES
+from shared.db import get_connection
 
 def selection():
     print("Enter directory you want to cast")
@@ -27,7 +28,8 @@ def selection():
         
     return dir
     
-def CastToCorrectTypes(con, gui=False, path = "", files = []):
+def CastToCorrectTypes(gui=False, path = "", files = []):
+    con = get_connection()
     dir = ""
     if(gui == False):
         dir = selection()

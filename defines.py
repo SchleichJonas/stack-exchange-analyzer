@@ -1,1 +1,0 @@
-IGNOREDDIRECTORIES = [".venv", ".git", "__pycache__"]

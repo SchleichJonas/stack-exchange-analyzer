@@ -1,3 +1,11 @@
 mathoverflow/*
 mathstackexchange/*
 test/
+__pycache__/*
+backend/__pycache__/*
+frontend/__pycache__/*
+*.parquet
+*.xml
+mathoverflow.net/license.txt
+mathoverflow.net/sede-and-data-dump-schema.md
+shared/*

@@ -2,7 +2,7 @@ import lxml.etree as ET
 import pyarrow as pa
 import pyarrow.parquet as pq
 import os
-from defines import IGNOREDDIRECTORIES
+from shared.defines import IGNOREDDIRECTORIES
 
 def get_schema_keys(xml_path):
     keys = set()
