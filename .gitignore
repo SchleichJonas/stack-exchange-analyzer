@@ -8,4 +8,5 @@ frontend/__pycache__/*
 *.xml
 mathoverflow.net/license.txt
 mathoverflow.net/sede-and-data-dump-schema.md
-shared/*
+
+shared/__pycache__/*

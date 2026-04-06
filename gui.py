@@ -3,6 +3,7 @@ from frontend.parserUI import parserSite
 from frontend.describeUI import describeSite
 from frontend.castingTablesUI import castingTablesSite
 from frontend.complexityUI import complexitySite
+from frontend.plotsUI import plotsSite
 
 
 def main():
@@ -18,7 +19,8 @@ def main():
             "Parse XML to Parquet", 
             "Describe Tables", 
             "Cast Tables to Types", 
-            "Calculate Complexity"
+            "Calculate Complexity",
+            "Plots"
         ]
     )
 
@@ -35,6 +37,9 @@ def main():
             
     elif action == "Calculate Complexity":
         complexitySite()
+        
+    elif action == "Plots":
+        plotsSite()
 
 
 if __name__ == "__main__":
