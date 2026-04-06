@@ -4,6 +4,7 @@ from frontend.describeUI import describeSite
 from frontend.castingTablesUI import castingTablesSite
 from frontend.complexityUI import complexitySite
 from frontend.plotsUI import plotsSite
+from frontend.customQueryUI import customQuerySite
 
 
 def main():
@@ -20,7 +21,8 @@ def main():
             "Describe Tables", 
             "Cast Tables to Types", 
             "Calculate Complexity",
-            "Plots"
+            "Plots",
+            "Custom Query"
         ]
     )
 
@@ -40,6 +42,9 @@ def main():
         
     elif action == "Plots":
         plotsSite()
+        
+    elif action == "Custom Query":
+        customQuerySite()
 
 
 if __name__ == "__main__":
