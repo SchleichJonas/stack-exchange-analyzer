@@ -17,6 +17,7 @@ This section will cover how to use the tools we built for our analysis
 - Python3 (Tested on `Python3.13` and `Python 3.14`)
 - Stackexchange data dump (Only mathoverflow.net.7z and math.stackexchange.com.7z was used from 2025-09-30 from the <a href="https://archive.org/details/stackexchange_20250930" title="stackexchange_20250930">Internet Archive</a>, but in theory other dumps/files should work just fine)
 - Put the XML files in a subdirectory of the projects base directory so the program finds the files.
+- tkinter should work on Windows and MacOS out of the box, but on Linux you need to install it using the system's package manager
 
 ### Installation
 To install all necessary requirements use:
@@ -25,6 +26,21 @@ To install all necessary requirements use:
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+```
+
+To install tkinter on Linx:
+**Fedora**
+```bash
+sudo dnf install python3-tkinter
+```
+**Arch**
+```bash
+sudo pacman -S tk
+```
+**Ubuntu**
+```bash
+sudo apt update
+sudo apt install python3-tk
 ```
 
 ### Usage
