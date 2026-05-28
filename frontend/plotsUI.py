@@ -15,7 +15,7 @@ def eventSelector():
         return selected_map
 
 
-def plotDatapoint(column):
+def plotDatapoint(column, plots):
     if "path" not in st.session_state:
         st.session_state.path = ""
     if "col" not in st.session_state:
@@ -43,7 +43,10 @@ def plotDatapoint(column):
                     else:
                         df["PostDate"] = pd.to_datetime(df["PostDate"])
                         df[f"{st.session_state.rolling} day trend"] = df[column].rolling(window=st.session_state.rolling, min_periods=1).mean()
-                        fig = px.line(df, x="PostDate", y=[column, f"{st.session_state.rolling} day trend"])
+                        fig = px.line(df, x="PostDate", 
+                                      y=[column, 
+                                      f"{st.session_state.rolling} day trend"], 
+                                      title=plots[st.session_state.plot_index])
                         fig.data[1].line.color = 'red'
                         fig.data[1].line.width = 3
                         fig.update_xaxes(range=[pd.to_datetime(start_date), pd.to_datetime(end_date)])
@@ -68,7 +71,7 @@ def plotDatapoint(column):
                 st.error(f"Something went wrong: {e}")
 
 
-def plotTags():
+def plotTags(plots):
     if "path" not in st.session_state:
         st.session_state.path = ""
     if "col" not in st.session_state:
@@ -91,7 +94,10 @@ def plotTags():
                     if df.empty:
                         st.warning("Query is empty")
                     else:
-                        fig = px.line(df, x="PostDate", y="TagCount", color="TagName")
+                        fig = px.line(df, x="PostDate", 
+                                      y="TagCount", 
+                                      color="TagName",
+                                      title=plots[st.session_state.plot_index])
                         fig.update_traces(line_width=2)
                         fig.update_xaxes(range=[pd.to_datetime(start_date), pd.to_datetime(end_date)])
                         fig.update_layout(uirevision=str(st.session_state.dates))
@@ -223,8 +229,8 @@ def plotsSite():
                f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(TypoCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedTypoRate FROM '{filepath}' GROUP BY PostDate ORDER BY PostDate",
                f"PLACEHOLDER"
                ]
-    plots = [f"Question count over time",
-             f"Answer count over time",
+    plots = [f"Questions per day",
+             f"Answers per day",
              f"Top {st.session_state.tag_count} tags usage over time",
              f"Average Word count of Questions over time",
              f"Average Word count of Answers over time",
@@ -254,27 +260,27 @@ def plotsSite():
     st.session_state.query = queries[st.session_state.plot_index]
 
     if(st.session_state.plot_index == 0 or st.session_state.plot_index == 1):
-        plotDatapoint("PostCount")
+        plotDatapoint("PostCount", plots)
     elif(st.session_state.plot_index == 2):
-        plotTags()
+        plotTags(plots)
     elif(st.session_state.plot_index == 3 or st.session_state.plot_index == 4):
-        plotDatapoint("AverageWordCount")
+        plotDatapoint("AverageWordCount", plots)
     elif(st.session_state.plot_index == 5 or st.session_state.plot_index == 6):
-        plotDatapoint("AverageEmDashCount")
+        plotDatapoint("AverageEmDashCount", plots)
     elif(st.session_state.plot_index == 7 or st.session_state.plot_index == 8):
-        plotDatapoint("AverageAsteriskCount")
+        plotDatapoint("AverageAsteriskCount", plots)
     elif(st.session_state.plot_index == 9 or st.session_state.plot_index == 10):
-        plotDatapoint("AverageDelveCount")
+        plotDatapoint("AverageDelveCount", plots)
     elif(st.session_state.plot_index == 11 or st.session_state.plot_index == 12):
-        plotDatapoint("AverageIntricateCount")
+        plotDatapoint("AverageIntricateCount", plots)
     elif(st.session_state.plot_index == 13 or st.session_state.plot_index == 14):
-        plotDatapoint("AverageUnderscoreCount")
+        plotDatapoint("AverageUnderscoreCount", plots)
     elif(st.session_state.plot_index == 15 or st.session_state.plot_index == 16):
-        plotDatapoint("AverageKeyLLMWordCount")
+        plotDatapoint("AverageKeyLLMWordCount", plots)
     elif(st.session_state.plot_index == 17 or st.session_state.plot_index == 18 or st.session_state.plot_index == 19):
-        plotDatapoint("AverageTypoCount")
+        plotDatapoint("AverageTypoCount", plots)
     elif(st.session_state.plot_index == 20 or st.session_state.plot_index == 21 or st.session_state.plot_index == 22):
-        plotDatapoint("NormalizedTypoRate")
+        plotDatapoint("NormalizedTypoRate", plots)
     elif(st.session_state.plot_index == 23):
         scatterPlot()
         
