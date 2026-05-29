@@ -68,9 +68,12 @@ def calculateComplexity(gui = False, path = "", file = "", col = ""):
                 (length(p.{col}) - length(replace(p.{col}, '—', ''))) AS EmDashCount,
                 (length(p.{col}) - length(replace(p.{col}, '*', ''))) AS AsteriskCount,
                 
-                len(regexp_extract_all(p.{col}, '(?i)delve')) AS DelveCount,
-                len(regexp_extract_all(p.{col}, '(?i)intricate')) AS IntricateCount,
-                len(regexp_extract_all(p.{col}, '(?i)underscore')) AS UnderscoreCount,
+                len(regexp_extract_all(p.{col}, '(?i)\bdelve\b')) AS DelveCount,
+                len(regexp_extract_all(p.{col}, '(?i)\bintricate\b')) AS IntricateCount,
+                len(regexp_extract_all(p.{col}, '(?i)\bunderscore\b')) AS UnderscoreCount,
+                len(regexp_extract_all(p.{col}, '(?i)\bcrucial\b')) AS CrucialCount,
+                len(regexp_extract_all(p.{col}, '(?i)\bpotential\b')) AS PotentialCount,
+                len(regexp_extract_all(p.{col}, '(?i)\bsignificant\b')) AS SignificantCount,
                 
                 len(list_intersect(regexp_extract_all(lower(regexp_replace(p.{col}, '<[^>]+>|<code>.*?</code>', '', 'g')), '\\w+'), (SELECT typo_list FROM TypoData))) AS TypoCount
                 
