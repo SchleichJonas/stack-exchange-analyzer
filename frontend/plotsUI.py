@@ -230,9 +230,21 @@ def plotsSite():
         f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(UnderscoreCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedUnderscoreRate FROM '{filepath}' WHERE PostTypeId = 2 GROUP BY PostDate ORDER BY PostDate",
         f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(UnderscoreCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedUnderscoreRate FROM '{filepath}' GROUP BY PostDate ORDER BY PostDate",
 
-        f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(DelveCount + IntricateCount + UnderscoreCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedKeyLLMRate FROM '{filepath}' WHERE PostTypeId = 1 GROUP BY PostDate ORDER BY PostDate",
-        f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(DelveCount + IntricateCount + UnderscoreCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedKeyLLMRate FROM '{filepath}' WHERE PostTypeId = 2 GROUP BY PostDate ORDER BY PostDate",
-        f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(DelveCount + IntricateCount + UnderscoreCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedKeyLLMRate FROM '{filepath}' GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(CrucialCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedCrucialRate FROM '{filepath}' WHERE PostTypeId = 1 GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(CrucialCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedCrucialRate FROM '{filepath}' WHERE PostTypeId = 2 GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(CrucialCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedCrucialRate FROM '{filepath}' GROUP BY PostDate ORDER BY PostDate",
+        
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(PotentialCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedPotentialRate FROM '{filepath}' WHERE PostTypeId = 1 GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(PotentialCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedPotentialRate FROM '{filepath}' WHERE PostTypeId = 2 GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(PotentialCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedPotentialRate FROM '{filepath}' GROUP BY PostDate ORDER BY PostDate",
+        
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(SignificantCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedSignificantRate FROM '{filepath}' WHERE PostTypeId = 1 GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(SignificantCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedSignificantRate FROM '{filepath}' WHERE PostTypeId = 2 GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(SignificantCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedSignificantRate FROM '{filepath}' GROUP BY PostDate ORDER BY PostDate",
+
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(DelveCount + IntricateCount + UnderscoreCount + CrucialCount + PotentialCount + SignificantCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedKeyLLMRate FROM '{filepath}' WHERE PostTypeId = 1 GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(DelveCount + IntricateCount + UnderscoreCount + CrucialCount + PotentialCount + SignificantCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedKeyLLMRate FROM '{filepath}' WHERE PostTypeId = 2 GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(DelveCount + IntricateCount + UnderscoreCount + CrucialCount + PotentialCount + SignificantCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedKeyLLMRate FROM '{filepath}' GROUP BY PostDate ORDER BY PostDate",
 
         f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(TypoCount) AS AverageTypoCount FROM '{filepath}' WHERE PostTypeId = 1 GROUP BY PostDate ORDER BY PostDate",
         f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(TypoCount) AS AverageTypoCount FROM '{filepath}' WHERE PostTypeId = 2 GROUP BY PostDate ORDER BY PostDate",
@@ -266,16 +278,25 @@ def plotsSite():
         f"Normalized underscore count of questions over time",              # 17
         f"Normalized underscore count of answers over time",                # 18
         f"Normalized underscore count of posts over time",                  # 19
-        f"Normalized combined LLM keywords count of questions over time",   # 20
-        f"Normalized combined LLM keywords count of answers over time",     # 21
-        f"Normalized combined LLM keywords count of posts over time",       # 22
-        f"Average typo count of questions over time",                       # 23
-        f"Average typo count of answers over time",                         # 24
-        f"Average typo count over time",                                    # 25
-        f"Normalized typo count of questions over time",                    # 26
-        f"Normalized typo count of answers over time",                      # 27
-        f"Normalized typo count over time",                                 # 28
-        f"Scatter plot",                                                    # 29
+        f"Normalized crucial count of questions over time",                 # 20
+        f"Normalized crucial count of answers over time",                   # 21
+        f"Normalized crucial count of posts over time",                     # 22
+        f"Normalized potential count of questions over time",               # 23
+        f"Normalized potential count of answers over time",                 # 24
+        f"Normalized potential count of posts over time",                   # 25
+        f"Normalized significant count of questions over time",             # 26
+        f"Normalized significant count of answers over time",               # 27
+        f"Normalized significant count of posts over time",                 # 28
+        f"Normalized combined LLM keywords count of questions over time",   # 29
+        f"Normalized combined LLM keywords count of answers over time",     # 30
+        f"Normalized combined LLM keywords count of posts over time",       # 31
+        f"Average typo count of questions over time",                       # 32
+        f"Average typo count of answers over time",                         # 33
+        f"Average typo count over time",                                    # 34
+        f"Normalized typo count of questions over time",                    # 35
+        f"Normalized typo count of answers over time",                      # 36
+        f"Normalized typo count over time",                                 # 37
+        f"Scatter plot",                                                    # 38
     ]
 
     selected_plot = selectboxWrapper("Select a predefined plot:", plots, "")
@@ -300,11 +321,17 @@ def plotsSite():
     elif(st.session_state.plot_index == 17 or st.session_state.plot_index == 18 or st.session_state.plot_index == 19):
         plotDatapoint("NormalizedUnderscoreRate", plots)
     elif(st.session_state.plot_index == 20 or st.session_state.plot_index == 21 or st.session_state.plot_index == 22):
-        plotDatapoint("NormalizedKeyLLMRate", plots)
+        plotDatapoint("NormalizedCrucialRate", plots)
     elif(st.session_state.plot_index == 23 or st.session_state.plot_index == 24 or st.session_state.plot_index == 25):
-        plotDatapoint("AverageTypoCount", plots)
+        plotDatapoint("NormalizedPotentialRate", plots)
     elif(st.session_state.plot_index == 26 or st.session_state.plot_index == 27 or st.session_state.plot_index == 28):
+        plotDatapoint("NormalizedSignificantRate", plots)
+    elif(st.session_state.plot_index == 29 or st.session_state.plot_index == 30 or st.session_state.plot_index == 31):
+        plotDatapoint("NormalizedKeyLLMRate", plots)
+    elif(st.session_state.plot_index == 32 or st.session_state.plot_index == 33 or st.session_state.plot_index == 34):
+        plotDatapoint("AverageTypoCount", plots)
+    elif(st.session_state.plot_index == 35 or st.session_state.plot_index == 36 or st.session_state.plot_index == 37):
         plotDatapoint("NormalizedTypoRate", plots)
-    elif(st.session_state.plot_index == 29):
+    elif(st.session_state.plot_index == 38):
         scatterPlot()
         
