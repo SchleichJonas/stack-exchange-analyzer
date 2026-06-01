@@ -6,6 +6,7 @@ import datetime
 import plotly.express as px
 from shared.defines import IMPORTANTDATES
 import pandas as pd
+import numpy as np
 
 def eventSelector():
     with st.expander("Select release dates to be included in the plot", expanded=False):
@@ -42,13 +43,19 @@ def plotDatapoint(column, plots):
                         st.warning("Query is empty")
                     else:
                         df["PostDate"] = pd.to_datetime(df["PostDate"])
+                        df["DateOrdinal"] = df["PostDate"].map(pd.Timestamp.toordinal)
+                        slope, intercept = np.polyfit(df["DateOrdinal"], df[column], 1)
+                        df["LinearRegression"] = slope * df["DateOrdinal"] + intercept
                         df[f"{st.session_state.rolling} day trend"] = df[column].rolling(window=st.session_state.rolling, min_periods=1).mean()
                         fig = px.line(df, x="PostDate", 
                                       y=[column, 
-                                      f"{st.session_state.rolling} day trend"], 
+                                      f"{st.session_state.rolling} day trend",
+                                      "LinearRegression"], 
                                       title=plots[st.session_state.plot_index])
                         fig.data[1].line.color = 'red'
                         fig.data[1].line.width = 3
+                        fig.data[2].line.color = "green"
+                        fig.data[2].line.width = 3
                         fig.update_xaxes(range=[pd.to_datetime(start_date), pd.to_datetime(end_date)])
                         fig.update_layout(uirevision=str(st.session_state.dates))
                         st.session_state.last_dates = st.session_state.dates
@@ -209,6 +216,7 @@ def plotsSite():
         
         f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(WordCount) AS AverageWordCount FROM '{filepath}' WHERE PostTypeId = 1 GROUP BY PostDate ORDER BY PostDate",
         f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(WordCount) AS AverageWordCount FROM '{filepath}' WHERE PostTypeId = 2 GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(WordCount) AS AverageWordCount FROM '{filepath}' GROUP BY PostDate ORDER BY PostDate",
 
         f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(EmDashCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedEmDashRate FROM '{filepath}' WHERE PostTypeId = 1 GROUP BY PostDate ORDER BY PostDate",
         f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(EmDashCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedEmDashRate FROM '{filepath}' WHERE PostTypeId = 2 GROUP BY PostDate ORDER BY PostDate",
@@ -263,40 +271,41 @@ def plotsSite():
         f"Top {st.session_state.tag_count} tags usage over time",           # 2
         f"Average Word count of questions over time",                       # 3
         f"Average Word count of answers over time",                         # 4
-        f"Normalized EM dash count of questions over time",                 # 5
-        f"Normalized EM dash count of answers over time",                   # 6
-        f"Normalized EM dash count of posts over time",                     # 7
-        f"Normalized Asterisk count of questions over time",                # 8
-        f"Normalized Asterisk count of answers over time",                  # 9
-        f"Normalized Asterisk count of posts over time",                    # 10
-        f"Normalized delve count of questions over time",                   # 11
-        f"Normalized delve count of answers over time",                     # 12
-        f"Normalized delve count of posts over time",                       # 13
-        f"Normalized intricate count of questions over time",               # 14
-        f"Normalized intricate count of answers over time",                 # 15
-        f"Normalized intricate count of posts over time",                   # 16
-        f"Normalized underscore count of questions over time",              # 17
-        f"Normalized underscore count of answers over time",                # 18
-        f"Normalized underscore count of posts over time",                  # 19
-        f"Normalized crucial count of questions over time",                 # 20
-        f"Normalized crucial count of answers over time",                   # 21
-        f"Normalized crucial count of posts over time",                     # 22
-        f"Normalized potential count of questions over time",               # 23
-        f"Normalized potential count of answers over time",                 # 24
-        f"Normalized potential count of posts over time",                   # 25
-        f"Normalized significant count of questions over time",             # 26
-        f"Normalized significant count of answers over time",               # 27
-        f"Normalized significant count of posts over time",                 # 28
-        f"Normalized combined LLM keywords count of questions over time",   # 29
-        f"Normalized combined LLM keywords count of answers over time",     # 30
-        f"Normalized combined LLM keywords count of posts over time",       # 31
-        f"Average typo count of questions over time",                       # 32
-        f"Average typo count of answers over time",                         # 33
-        f"Average typo count over time",                                    # 34
-        f"Normalized typo count of questions over time",                    # 35
-        f"Normalized typo count of answers over time",                      # 36
-        f"Normalized typo count over time",                                 # 37
-        f"Scatter plot",                                                    # 38
+        f"Average Word count of posts over time",                           # 5
+        f"Normalized EM dash count of questions over time",                 # 6
+        f"Normalized EM dash count of answers over time",                   # 7
+        f"Normalized EM dash count of posts over time",                     # 8
+        f"Normalized Asterisk count of questions over time",                # 9
+        f"Normalized Asterisk count of answers over time",                  # 10
+        f"Normalized Asterisk count of posts over time",                    # 11
+        f"Normalized delve count of questions over time",                   # 12
+        f"Normalized delve count of answers over time",                     # 13
+        f"Normalized delve count of posts over time",                       # 14
+        f"Normalized intricate count of questions over time",               # 15
+        f"Normalized intricate count of answers over time",                 # 16
+        f"Normalized intricate count of posts over time",                   # 17
+        f"Normalized underscore count of questions over time",              # 18
+        f"Normalized underscore count of answers over time",                # 19
+        f"Normalized underscore count of posts over time",                  # 20
+        f"Normalized crucial count of questions over time",                 # 21
+        f"Normalized crucial count of answers over time",                   # 22
+        f"Normalized crucial count of posts over time",                     # 23
+        f"Normalized potential count of questions over time",               # 24
+        f"Normalized potential count of answers over time",                 # 25
+        f"Normalized potential count of posts over time",                   # 26
+        f"Normalized significant count of questions over time",             # 27
+        f"Normalized significant count of answers over time",               # 28
+        f"Normalized significant count of posts over time",                 # 29
+        f"Normalized combined LLM keywords count of questions over time",   # 30
+        f"Normalized combined LLM keywords count of answers over time",     # 31
+        f"Normalized combined LLM keywords count of posts over time",       # 32
+        f"Average typo count of questions over time",                       # 33
+        f"Average typo count of answers over time",                         # 34
+        f"Average typo count over time",                                    # 35
+        f"Normalized typo count of questions over time",                    # 36
+        f"Normalized typo count of answers over time",                      # 37
+        f"Normalized typo count over time",                                 # 38
+        f"Scatter plot",                                                    # 39
     ]
 
     selected_plot = selectboxWrapper("Select a predefined plot:", plots, "")
@@ -308,30 +317,30 @@ def plotsSite():
         plotDatapoint("PostCount", plots)
     elif(st.session_state.plot_index == 2):
         plotTags(plots)
-    elif(st.session_state.plot_index == 3 or st.session_state.plot_index == 4):
+    elif(st.session_state.plot_index == 3 or st.session_state.plot_index == 4 or st.session_state.plot_index == 5):
         plotDatapoint("AverageWordCount", plots)
-    elif(st.session_state.plot_index == 5 or st.session_state.plot_index == 6 or st.session_state.plot_index == 7):
+    elif(st.session_state.plot_index == 6 or st.session_state.plot_index == 7 or st.session_state.plot_index == 8):
         plotDatapoint("NormalizedEmDashRate", plots)
-    elif(st.session_state.plot_index == 8 or st.session_state.plot_index == 9 or st.session_state.plot_index == 10):
+    elif(st.session_state.plot_index == 9 or st.session_state.plot_index == 10 or st.session_state.plot_index == 11):
         plotDatapoint("NormalizedAsteriskRate", plots)
-    elif(st.session_state.plot_index == 11 or st.session_state.plot_index == 12 or st.session_state.plot_index == 13):
+    elif(st.session_state.plot_index == 12 or st.session_state.plot_index == 13 or st.session_state.plot_index == 14):
         plotDatapoint("NormalizedDelveRate", plots)
-    elif(st.session_state.plot_index == 14 or st.session_state.plot_index == 15 or st.session_state.plot_index == 16):
+    elif(st.session_state.plot_index == 15 or st.session_state.plot_index == 16 or st.session_state.plot_index == 17):
         plotDatapoint("NormalizedIntricateRate", plots)
-    elif(st.session_state.plot_index == 17 or st.session_state.plot_index == 18 or st.session_state.plot_index == 19):
+    elif(st.session_state.plot_index == 18 or st.session_state.plot_index == 19 or st.session_state.plot_index == 20):
         plotDatapoint("NormalizedUnderscoreRate", plots)
-    elif(st.session_state.plot_index == 20 or st.session_state.plot_index == 21 or st.session_state.plot_index == 22):
+    elif(st.session_state.plot_index == 21 or st.session_state.plot_index == 22 or st.session_state.plot_index == 23):
         plotDatapoint("NormalizedCrucialRate", plots)
-    elif(st.session_state.plot_index == 23 or st.session_state.plot_index == 24 or st.session_state.plot_index == 25):
+    elif(st.session_state.plot_index == 24 or st.session_state.plot_index == 25 or st.session_state.plot_index == 26):
         plotDatapoint("NormalizedPotentialRate", plots)
-    elif(st.session_state.plot_index == 26 or st.session_state.plot_index == 27 or st.session_state.plot_index == 28):
+    elif(st.session_state.plot_index == 27 or st.session_state.plot_index == 28 or st.session_state.plot_index == 29):
         plotDatapoint("NormalizedSignificantRate", plots)
-    elif(st.session_state.plot_index == 29 or st.session_state.plot_index == 30 or st.session_state.plot_index == 31):
+    elif(st.session_state.plot_index == 30 or st.session_state.plot_index == 31 or st.session_state.plot_index == 32):
         plotDatapoint("NormalizedKeyLLMRate", plots)
-    elif(st.session_state.plot_index == 32 or st.session_state.plot_index == 33 or st.session_state.plot_index == 34):
+    elif(st.session_state.plot_index == 33 or st.session_state.plot_index == 34 or st.session_state.plot_index == 35):
         plotDatapoint("AverageTypoCount", plots)
-    elif(st.session_state.plot_index == 35 or st.session_state.plot_index == 36 or st.session_state.plot_index == 37):
+    elif(st.session_state.plot_index == 36 or st.session_state.plot_index == 37 or st.session_state.plot_index == 38):
         plotDatapoint("NormalizedTypoRate", plots)
-    elif(st.session_state.plot_index == 38):
+    elif(st.session_state.plot_index == 39):
         scatterPlot()
         
