@@ -5,6 +5,9 @@ from frontend.castingTablesUI import castingTablesSite
 from frontend.complexityUI import complexitySite
 from frontend.plotsUI import plotsSite
 from frontend.customQueryUI import customQuerySite
+from frontend.analyzeBooksUI import analyzeBooksSite
+from frontend.mseAnalyzerUI import mseAnalyzerSite
+from frontend.similarityUI import similaritySite
 
 
 def main():
@@ -22,7 +25,10 @@ def main():
             "Cast Tables to Types", 
             "Calculate Complexity",
             "Plots",
-            "Custom Query"
+            "Custom Query",
+            "Analyze Books",
+            "MSE Analyzer",
+            "Books and MSE comparison",
         ]
     )
 
@@ -45,6 +51,15 @@ def main():
         
     elif action == "Custom Query":
         customQuerySite()
+
+    elif action == "Analyze Books":
+        analyzeBooksSite()
+
+    elif action == "MSE Analyzer":
+        mseAnalyzerSite()
+
+    elif action == "Books and MSE comparison":
+        similaritySite()
 
 
 if __name__ == "__main__":
