@@ -7,6 +7,7 @@ import re
 import pandas as pd
 from collections import defaultdict
 from pathlib import Path
+import pickle
 
 from backend.analyzer import (
     DEFAULT_PATTERNS,
@@ -186,7 +187,6 @@ def analyze_posts(
     post_lengths = defaultdict(list)
     seen = 0
     kept = 0
-
     for post in iter_posts(posts_path):
         seen += 1
         if limit and seen > limit:
@@ -241,8 +241,9 @@ def analyze_posts(
     write_csv(output / "mse_summary_by_post_type.csv", post_type_summary)
     write_csv(output / "mse_post_length_summary.csv", post_length_summary(post_lengths))
     write_csv(output / "mse_key_metrics_by_field.csv", key_metrics(field_summary))
-    figures = make_plots(output, field_summary, window_rows)
-    return figures
+    data_dir = posts_path.resolve().parent / "plot_inputs.pkl"
+    with open(data_dir, "wb") as f:
+        pickle.dump((output, field_summary, window_rows), f)
 
 
 def main(DEFAULT_POSTS):
@@ -254,7 +255,7 @@ def main(DEFAULT_POSTS):
     parser.add_argument("--limit", type=int, default=None, help="Optional XML row limit for quick tests.")
     parser.add_argument("--min-words", type=int, default=0, help="Skip posts shorter than this word count.")
     args = parser.parse_args()
-    figures = analyze_posts(
+    analyze_posts(
         args.posts,
         args.output,
         args.window,
@@ -262,5 +263,4 @@ def main(DEFAULT_POSTS):
         args.limit,
         args.min_words,
     )
-    return figures
 

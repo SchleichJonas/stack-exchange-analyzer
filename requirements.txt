@@ -5,7 +5,8 @@ numpy
 pandas
 plotly
 pandas
-
+matplotlib
+pypdf
 
 streamlit
 statsmodels

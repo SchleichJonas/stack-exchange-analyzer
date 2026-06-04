@@ -8,6 +8,7 @@ import unicodedata
 from collections import Counter, defaultdict
 from pathlib import Path
 from pypdf import PdfReader
+import pickle
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -290,7 +291,10 @@ def values_by_field(rows: list[dict], metric: str) -> tuple[list[str], list[list
     return names, [grouped[name] for name in names]
 
 
-def make_plots(field_summary: list[dict], window_rows: list[dict]):
+def make_plots(path):
+    data_dir = path + "/plot_inputs.pkl"
+    with open(data_dir, "rb") as f:
+        output, field_summary, window_rows = pickle.load(f)
     try:
         import matplotlib.pyplot as plt
     except ImportError:
