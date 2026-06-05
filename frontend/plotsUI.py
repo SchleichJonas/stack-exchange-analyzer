@@ -201,7 +201,7 @@ def plotsSite():
     except Exception as e:
         st.write(f"Something went wrong: {e}")
         
-    st.session_state.dates = st.date_input("Select Timespan:",value=[datetime.date(2022, 1, 1), datetime.date(2023, 1, 1)], min_value=datetime.date(2009, 1, 1), max_value=datetime.date(2026, 1, 1))
+    st.session_state.dates = st.date_input("Select Timespan:",value=[datetime.date(2018, 1, 1), datetime.date(2026, 3, 31)], min_value=datetime.date(2009, 1, 1), max_value=datetime.date(2026, 3, 31))
         
     if(len(files) > 0):
         st.session_state.file = selectboxWrapper("Select the table you want to plot something of:", files, st.session_state.file)

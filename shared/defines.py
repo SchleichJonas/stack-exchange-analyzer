@@ -3,7 +3,7 @@ import datetime
 IGNOREDDIRECTORIES = [".venv", ".git", "__pycache__", "backend", "frontend"]
 
 OPENAIRELEASES = {"GPT-1": datetime.date(2018,6,11),            #https://github.com/jqueryscript/chatgpt-timeline
-                  "GPT-2 public": datetime.date(2019,11,5),      #https://github.com/jqueryscript/chatgpt-timeline
+                  "GPT-2": datetime.date(2019,11,5),      #https://github.com/jqueryscript/chatgpt-timeline
                   "GPT-3": datetime.date(2020,6,11),            #https://github.com/jqueryscript/chatgpt-timeline
                   "GPT-3.5": datetime.date(2022,11,30),         #https://en.wikipedia.org/wiki/GPT-3#GPT-3.5
                   "GPT-4": datetime.date(2023,3,14),            #https://en.wikipedia.org/wiki/GPT-4
