@@ -44,8 +44,12 @@ def plotDatapoint(column, plots):
                     else:
                         df["PostDate"] = pd.to_datetime(df["PostDate"])
                         df["DateOrdinal"] = df["PostDate"].map(pd.Timestamp.toordinal)
-                        slope, intercept = np.polyfit(df["DateOrdinal"], df[column], 1)
-                        df["LinearRegression"] = slope * df["DateOrdinal"] + intercept
+                        valid_df = df.dropna(subset=[column, "DateOrdinal"])
+                        if len(valid_df) > 1:
+                            slope, intercept = np.polyfit(valid_df["DateOrdinal"], valid_df[column], 1)
+                            df["LinearRegression"] = slope * df["DateOrdinal"] + intercept
+                        else:
+                            df["LinearRegression"] = None
                         df[f"{st.session_state.rolling} day trend"] = df[column].rolling(window=st.session_state.rolling, min_periods=1).mean()
                         fig = px.line(df, x="PostDate", 
                                       y=[column, 
@@ -262,7 +266,23 @@ def plotsSite():
         f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(TypoCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedTypoRate FROM '{filepath}' WHERE PostTypeId = 2 GROUP BY PostDate ORDER BY PostDate",
         f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(TypoCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedTypoRate FROM '{filepath}' GROUP BY PostDate ORDER BY PostDate",
         
-        f"PLACEHOLDER"
+        f"Scatter Plot PLACEHOLDER DO NOT DELETE",
+        
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(TotalFormulaCount) AS AverageFormulaCount FROM '{filepath}' WHERE PostTypeId = 1 GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(TotalFormulaCount) AS AverageFormulaCount FROM '{filepath}' WHERE PostTypeId = 2 GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(TotalFormulaCount) AS AverageFormulaCount FROM '{filepath}' GROUP BY PostDate ORDER BY PostDate",
+        
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(LongFormulaCount) AS AverageLongFormulaCount FROM '{filepath}' WHERE PostTypeId = 1 GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(LongFormulaCount) AS AverageLongFormulaCount FROM '{filepath}' WHERE PostTypeId = 2 GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(LongFormulaCount) AS AverageLongFormulaCount FROM '{filepath}' GROUP BY PostDate ORDER BY PostDate",
+                
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(TotalFormulaLength) AS AverageCombinedFormulaLength FROM '{filepath}' WHERE PostTypeId = 1 GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(TotalFormulaLength) AS AverageCombinedFormulaLength FROM '{filepath}' WHERE PostTypeId = 2 GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(TotalFormulaLength) AS AverageCombinedFormulaLength FROM '{filepath}' GROUP BY PostDate ORDER BY PostDate",
+        
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(AverageFormulaLength) AS AverageAverageFormulaLength FROM '{filepath}' WHERE PostTypeId = 1 GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(AverageFormulaLength) AS AverageAverageFormulaLength FROM '{filepath}' WHERE PostTypeId = 2 GROUP BY PostDate ORDER BY PostDate",
+        f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(AverageFormulaLength) AS AverageAverageFormulaLength FROM '{filepath}' GROUP BY PostDate ORDER BY PostDate",
     ]
 
     plots = [
@@ -306,6 +326,18 @@ def plotsSite():
         f"Normalized typo count of answers over time",                      # 37
         f"Normalized typo count over time",                                 # 38
         f"Scatter plot",                                                    # 39
+        f"Average formula count of questions over time",                    # 40
+        f"Average formula count of answers over time",                      # 41
+        f"Average formula count over time",                                 # 42
+        f"Average long (over 10 characters) formula count of questions over time",                  # 43
+        f"Average long (over 10 characters) formula count of answers over time",                    # 44
+        f"Average long (over 10 characters) formula count over time",                               # 45
+        f"Average combined formula length of questions over time",          # 46
+        f"Average combined formula length of answers over time",            # 47
+        f"Average combined formula length over time",                       # 48
+        f"Average average formula length of questions over time",           # 49
+        f"Average average formula length of answers over time",             # 50
+        f"Average average formula length over time",                        # 51
     ]
 
     selected_plot = selectboxWrapper("Select a predefined plot:", plots, "")
@@ -343,4 +375,12 @@ def plotsSite():
         plotDatapoint("NormalizedTypoRate", plots)
     elif(st.session_state.plot_index == 39):
         scatterPlot()
+    elif(st.session_state.plot_index == 40 or st.session_state.plot_index == 41 or st.session_state.plot_index == 42):
+        plotDatapoint("AverageFormulaCount", plots)
+    elif(st.session_state.plot_index == 43 or st.session_state.plot_index == 44 or st.session_state.plot_index == 45):
+        plotDatapoint("AverageLongFormulaCount", plots)
+    elif(st.session_state.plot_index == 46 or st.session_state.plot_index == 47 or st.session_state.plot_index == 48):
+        plotDatapoint("AverageCombinedFormulaLength", plots)
+    elif(st.session_state.plot_index == 49 or st.session_state.plot_index == 50 or st.session_state.plot_index == 51):
+        plotDatapoint("AverageAverageFormulaLength", plots)
         

@@ -61,6 +61,7 @@ def calculateComplexity(gui = False, path = "", file = "", col = ""):
                 len(regexp_extract_all(p.{col}, '\\$\\$?[^\\$]+\\$\\$?')) AS TotalFormulaCount,
                 len(regexp_extract_all(p.{col}, '\\$\\$?[^\\$]{{10,}}\\$\\$?')) AS LongFormulaCount,
                 length(array_to_string(regexp_extract_all(p.{col}, '\\$\\$?[^\\$]+\\$\\$?'), '')) AS TotalFormulaLength,
+                (length(array_to_string(regexp_extract_all(p.{col}, '\\$\\$?[^\\$]+\\$\\$?'), '')) * 1.0) / NULLIF(len(regexp_extract_all(p.{col}, '\\$\\$?[^\\$]+\\$\\$?')), 0) AS AverageFormulaLength,
 
                 length(regexp_replace(p.{col}, '<[^>]+>', '', 'g')) AS CharCount,                
                 len(regexp_extract_all(regexp_replace(p.{col}, '<[^>]+>', '', 'g'), '\\w+')) AS WordCount,
