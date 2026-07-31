@@ -7,6 +7,8 @@ import plotly.express as px
 from shared.defines import IMPORTANTDATES
 import pandas as pd
 import numpy as np
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 def eventSelector():
     with st.expander("Select release dates to be included in the plot", expanded=False):
@@ -80,6 +82,55 @@ def plotDatapoint(column, plots):
 
             except Exception as e:
                 st.error(f"Something went wrong: {e}")
+                
+                
+def plotComparisonDualAxes(query1, query2, name1, name2, col1, col2):
+    if "rolling" not in st.session_state:
+        st.session_state.rolling = 30
+        
+    st.session_state.rolling = st.number_input("Rolling average range", min_value=1, max_value=1000, value=st.session_state.rolling, step=1, key="dual_axis_rolling")
+    selected_map = eventSelector()
+    
+    try:
+        df1 = executeCustomQueryDF(query1)
+        df2 = executeCustomQueryDF(query2)
+        
+        if not df1.empty and not df2.empty:
+            df1["PostDate"] = pd.to_datetime(df1["PostDate"])
+            df2["PostDate"] = pd.to_datetime(df2["PostDate"])
+            df = pd.merge(df1, df2, on="PostDate", how="inner")
+            roll_name1 = f"{name1} ({st.session_state.rolling}d trend)"
+            roll_name2 = f"{name2} ({st.session_state.rolling}d trend)"
+            df[roll_name1] = df[col1].rolling(window=st.session_state.rolling, min_periods=1).mean()
+            df[roll_name2] = df[col2].rolling(window=st.session_state.rolling, min_periods=1).mean()
+            
+            fig = make_subplots(specs=[[{"secondary_y": True}]])
+            fig.add_trace(go.Scatter(x=df["PostDate"], y=df[col1], name=name1, line=dict(color='rgba(0, 0, 255, 0.25)')), secondary_y=False)
+            fig.add_trace(go.Scatter(x=df["PostDate"], y=df[col2], name=name2, line=dict(color='rgba(255, 140, 0, 0.25)')), secondary_y=True) 
+            fig.add_trace(go.Scatter(x=df["PostDate"], y=df[roll_name1], name=roll_name1, line=dict(color='blue', width=3)), secondary_y=False)
+            fig.add_trace(go.Scatter(x=df["PostDate"], y=df[roll_name2], name=roll_name2, line=dict(color='darkorange', width=3)), secondary_y=True)
+            fig.update_layout(title_text=f"Comparison: {name1} vs {name2}")
+            fig.update_yaxes(title_text=name1, secondary_y=False, title_font=dict(color="blue"))
+            fig.update_yaxes(title_text=name2, secondary_y=True, title_font=dict(color="darkorange"))
+            
+            if "dates" in st.session_state and isinstance(st.session_state.dates, tuple) and len(st.session_state.dates) == 2:
+                start_date, end_date = st.session_state.dates
+                fig.update_xaxes(range=[pd.to_datetime(start_date), pd.to_datetime(end_date)])
+            
+            for event_name, event_date in IMPORTANTDATES.items():
+                if(selected_map[event_name]):
+                    date_ms = pd.Timestamp(event_date).timestamp() * 1000
+                    fig.add_vline(
+                        x=date_ms, 
+                        line_width=2, 
+                        line_dash="dash", 
+                        line_color="red",
+                        annotation_text=event_name, 
+                        annotation_position="top right")
+            
+            st.plotly_chart(fig, width='stretch')
+    except Exception as e:
+        st.error(f"ERROR: {e}")
 
 
 def plotTags(plots):
@@ -266,7 +317,7 @@ def plotsSite():
         f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(TypoCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedTypoRate FROM '{filepath}' WHERE PostTypeId = 2 GROUP BY PostDate ORDER BY PostDate",
         f"SELECT CAST(CreationDate AS DATE) AS PostDate, (SUM(TypoCount) * 1000.0) / NULLIF(SUM(WordCount), 0) AS NormalizedTypoRate FROM '{filepath}' GROUP BY PostDate ORDER BY PostDate",
         
-        f"Scatter Plot PLACEHOLDER DO NOT DELETE",
+        f"Scatter Plot PLACEHOLDER - DO NOT DELETE",
         
         f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(TotalFormulaCount) AS AverageFormulaCount FROM '{filepath}' WHERE PostTypeId = 1 GROUP BY PostDate ORDER BY PostDate",
         f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(TotalFormulaCount) AS AverageFormulaCount FROM '{filepath}' WHERE PostTypeId = 2 GROUP BY PostDate ORDER BY PostDate",
@@ -283,6 +334,8 @@ def plotsSite():
         f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(AverageFormulaLength) AS AverageAverageFormulaLength FROM '{filepath}' WHERE PostTypeId = 1 GROUP BY PostDate ORDER BY PostDate",
         f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(AverageFormulaLength) AS AverageAverageFormulaLength FROM '{filepath}' WHERE PostTypeId = 2 GROUP BY PostDate ORDER BY PostDate",
         f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(AverageFormulaLength) AS AverageAverageFormulaLength FROM '{filepath}' GROUP BY PostDate ORDER BY PostDate",
+        
+        f"Average formula count and average word count comparison - DO NOT DELETE",
     ]
 
     plots = [
@@ -338,6 +391,7 @@ def plotsSite():
         f"Average average formula length of questions over time",           # 49
         f"Average average formula length of answers over time",             # 50
         f"Average average formula length over time",                        # 51
+        f"Average formula count and average word count comparison",         # 52
     ]
 
     selected_plot = selectboxWrapper("Select a predefined plot:", plots, "")
@@ -383,4 +437,10 @@ def plotsSite():
         plotDatapoint("AverageCombinedFormulaLength", plots)
     elif(st.session_state.plot_index == 49 or st.session_state.plot_index == 50 or st.session_state.plot_index == 51):
         plotDatapoint("AverageAverageFormulaLength", plots)
+    elif(st.session_state.plot_index == 52):
+        query1 = f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(TotalFormulaCount) AS AverageFormulaCount FROM '{filepath}' GROUP BY PostDate ORDER BY PostDate"
+        query2 = f"SELECT CAST(CreationDate AS DATE) AS PostDate, AVG(WordCount) AS AverageWordCount FROM '{filepath}' GROUP BY PostDate ORDER BY PostDate"
+        name1 = "Average Formula count"
+        name2 = "Average Word count"
+        plotComparisonDualAxes(query1, query2, name1, name2, "AverageFormulaCount", "AverageWordCount")
         
